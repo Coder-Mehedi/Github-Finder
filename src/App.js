@@ -15,13 +15,15 @@ const App = () => {
     users: [],
     user: {},
     loading: true,
-    alert: null
+    alert: null,
+    repos: []
   })
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)
       setGithub({...github, users: res.data, loading: false})
+      console.log('State Set')
     }
     fetchData()
   }, [])
@@ -36,6 +38,12 @@ const App = () => {
   const getUser = async username => {
     const res = await axios.get(`https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)    
     setGithub({...github, user: res.data, loading: false})
+  }
+
+  // Get Users Repos
+  const getUserRepos = async username => {
+    const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)    
+    setGithub({...github, repos: res.data, loading: false})
   }
 
   // Clear User From State
@@ -68,7 +76,7 @@ const App = () => {
               )} />
             <Route path='/about' component={About}/>
             <Route exact path='/user/:login' render={props => (
-              <User {...props} getUser={getUser} user={github.user} loading={github.loading} />)}/>
+              <User {...props} getUser={getUser} getUserRepos={getUserRepos} repos={github.repos} user={github.user} loading={github.loading} />)}/>
           </Switch>
           
         </div>
