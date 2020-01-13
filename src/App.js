@@ -11,18 +11,25 @@ import Alert from './components/layout/Alert'
 
 const App = () => {
 
-  const [github, setGithub] = useState({
-    users: [],
-    user: {},
-    loading: true,
-    alert: null,
-    repos: []
-  })
+  // const [github, setGithub] = useState({
+  //   users: [],
+  //   user: {},
+  //   loading: true,
+  //   alert: null,
+  //   repos: []
+  // })
+  const [users, setUsers] = useState([])
+  const [user, setUser] = useState({})
+  const [repos, setRepos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [alerts, setAlerts] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)
-      setGithub({...github, users: res.data, loading: false})
+      // setGithub({...github, users: res.data, loading: false})
+      setUsers(res.data)
+      setLoading(false)
       console.log('State Set')
     }
     fetchData()
@@ -31,29 +38,40 @@ const App = () => {
   // Search Github Users
   const searchUser = async input => {
     const res = await axios.get(`https://api.github.com/search/users?q=${input}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)    
-    setGithub({...github, users: res.data.items, loading: false})
+    // setGithub({...github, users: res.data.items, loading: false})
+    setUsers(res.data.items)
+    setLoading(false)
   }
 
   // Get a single github user
   const getUser = async username => {
     const res = await axios.get(`https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)    
-    setGithub({...github, user: res.data, loading: false})
+    // setGithub({...github, user: res.data, loading: false})
+    setUser(res.data)
+    setLoading(false)
+    console.log('getUser called')
   }
 
   // Get Users Repos
   const getUserRepos = async username => {
     const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)    
-    setGithub({...github, repos: res.data, loading: false})
+    // setGithub({...github, repos: res.data, loading: false})
+    setRepos(res.data)
+    setLoading(false)
+    console.log('get user repos called')
   }
 
   // Clear User From State
   const clearUsers = () => {
-    setGithub({...github, users: [], loading: false})
+    // setGithub({...github, users: [], loading: false})
+    setUsers([])
   }
 
   const setAlert = (msg, type) => {
-    setGithub({...github, alert: {msg, type}})
-    setTimeout(() => setGithub({...github, alert: null }), 5000)
+    // setGithub({...github, alert: {msg, type}, loading: false })
+    setAlerts({msg, type})
+    
+    setTimeout(() => setAlerts({}), 5000)
   }
 
   return (
@@ -61,22 +79,22 @@ const App = () => {
       <div className="App">
         <Navbar title="Minder"/>
         <div className="container">
-          <Alert alert={github.alert} />
+          <Alert alert={alerts} />
           <Switch>
             <Route exact path='/' render={props => (
                 <Fragment>
                   <Search
                     searchUser={searchUser}
                     clearUsers={clearUsers}
-                    users={github.users}
+                    users={users}
                     setAlert={setAlert}
                     />
-                  <Users loading={github.loading} users={github.users}/>
+                  <Users loading={loading} users={users}/>
                 </Fragment>
               )} />
             <Route path='/about' component={About}/>
             <Route exact path='/user/:login' render={props => (
-              <User {...props} getUser={getUser} getUserRepos={getUserRepos} repos={github.repos} user={github.user} loading={github.loading} />)}/>
+              <User {...props} getUser={getUser} getUserRepos={getUserRepos} repos={repos} user={user} loading={loading} />)}/>
           </Switch>
           
         </div>
