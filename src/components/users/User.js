@@ -1,18 +1,14 @@
 import React, { useEffect, Fragment, useContext } from 'react';
 import { Link } from 'react-router-dom'
 import Spinner from '../layout/Spinner'
-import PropTypes from 'prop-types'
 import Repos from '../repos/Repos'
 import GithubContext from '../../context/github/githubContext'
 
 
-const User = ({ repos, getUserRepos, match }) => {
+const User = ({ match }) => {
 	const githubContext = useContext(GithubContext)
-	const { loading, user, getUser } = githubContext
+	const { loading, user, getUser, repos, getUserRepos } = githubContext
 	const { name, avatar_url, location, bio, company,blog, login, html_url, followers, following, public_repos, public_gists, hireable} = user
-
-	
-    
 
 	useEffect(() => {
 		getUser(match.params.login)
@@ -31,7 +27,7 @@ const User = ({ repos, getUserRepos, match }) => {
 				{hireable ? <i className="fas fa-check text-success"></i> : <i className="fas fa-times-circle text-danger"></i>}
 				<div className="card grid-2">
 					<div className="all-center">
-						<img src={avatar_url} className="round-img" style={{ width: '150px'}}/>
+						<img src={avatar_url} className="round-img" style={{ width: '150px'}} alt=""/>
 						<h1>{name}</h1>
 						<p>Location: {location}</p>
 					</div>
@@ -68,12 +64,5 @@ const User = ({ repos, getUserRepos, match }) => {
 	
 }
 
-User.propTypes = {
-  getUser: PropTypes.bool,
-  user: PropTypes.object.isRequired,
-  repos: PropTypes.array.isRequired,
-  getUser: PropTypes.func.isRequired,
-  getUserRepos: PropTypes.func.isRequired
-}
 
 export default User;
