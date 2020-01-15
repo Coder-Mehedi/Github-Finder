@@ -14,6 +14,7 @@ const User = ({ match }) => {
 		getUser(match.params.login)
 		console.log(match.params.login)
 		getUserRepos(match.params.login)
+		// eslint-disable-next-line
 	}, [])
 
 
